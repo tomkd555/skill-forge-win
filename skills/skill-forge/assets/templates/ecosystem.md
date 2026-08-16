@@ -5,20 +5,23 @@ industry templates, and comprehensive reference knowledge.
 
 ## Structure
 ```
-skill-name/                  # Main orchestrator
-  SKILL.md
-  references/
-    ref-1.md
-    ref-2.md
-    ref-3.md
-  assets/
-    template-a.md
-    template-b.md
-  scripts/
-    fetch_data.py
-    parse_data.py
-    validate.py
+.claude-plugin/
+  plugin.json                # Plugin manifest
+  marketplace.json           # One-plugin catalogue, source "./"
 skills/
+  skill-name/                # Main orchestrator
+    SKILL.md
+    references/
+      ref-1.md
+      ref-2.md
+      ref-3.md
+    assets/
+      template-a.md
+      template-b.md
+    scripts/
+      fetch_data.py
+      parse_data.py
+      validate.py
   skill-name-audit/          # Full audit with parallel delegation
     SKILL.md
   skill-name-sub1/
@@ -32,8 +35,12 @@ agents/
   skill-name-role1.md
   skill-name-role2.md
   skill-name-role3.md
-install.sh
+install.ps1
 ```
+
+Every skill lives under `skills\` and every agent under `agents\`. Claude Code
+scans both automatically when the plugin installs, so this layout is what makes
+the ecosystem installable from a marketplace.
 
 ## Main Orchestrator Template
 
@@ -72,7 +79,7 @@ description: >
 Collect URL/data from user.
 
 ### Step 2: Initial Analysis
-Run: `python scripts/fetch_data.py {{INPUT}}`
+Run: `python scripts\fetch_data.py {{INPUT}}`
 
 ### Step 3: Detect Context
 Identify industry/type from initial data.
@@ -208,7 +215,8 @@ Key characteristics of {{INDUSTRY}} for this domain.
 - [ ] Scoring methodology defined with weights
 - [ ] Industry templates cover target verticals
 - [ ] Scripts for all deterministic operations
-- [ ] install.sh tested (install + uninstall)
+- [ ] `claude plugin validate .` passes
+- [ ] install.ps1 tested (install + uninstall)
 - [ ] Parallel delegation with sequential fallback
 - [ ] Shared references (no duplication)
 - [ ] Priority levels defined (Critical/High/Medium/Low)

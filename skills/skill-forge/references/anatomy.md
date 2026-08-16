@@ -52,7 +52,7 @@ skill-name/                    # Required: kebab-case folder
   SKILL.md                     # Required: exact case
   scripts/                     # Optional: executable code
     process.py
-    validate.sh
+    validate.ps1
   references/                  # Optional: on-demand documentation
     domain-guide.md
     api-reference.md
@@ -128,7 +128,7 @@ Body after `---` becomes the agent's system prompt (write in second person).
 
 ### Scripts (deterministic execution)
 ```
-scripts/script_name.py
+scripts\script_name.py
 ```
 - One script, one responsibility
 - CLI interface with structured JSON output

@@ -3,6 +3,11 @@
 Hooks execute shell commands, LLM prompts, or agents in response to Claude Code events.
 Use hooks to enforce quality gates, validate outputs, and automate workflows.
 
+On Windows, write command hooks as PowerShell scripts and invoke them with
+`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/name.ps1`. Keep the
+forward slashes: PowerShell accepts them, and a backslash inside a JSON or YAML
+string needs escaping that is easy to get wrong.
+
 ## All 15 Hook Events
 
 | Event | Trigger | Matcher | Key Capability |
@@ -29,7 +34,7 @@ Use hooks to enforce quality gates, validate outputs, and automate workflows.
 ```json
 {
   "type": "command",
-  "command": "bash scripts/validate.sh",
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate.ps1",
   "timeout": 30
 }
 ```
@@ -61,7 +66,7 @@ Use hooks to enforce quality gates, validate outputs, and automate workflows.
 
 ## Configuration Locations
 
-1. `~/.claude/settings.json` -- user-level
+1. `%USERPROFILE%\.claude\settings.json` -- user-level
 2. `.claude/settings.json` -- project-level (team-shared)
 3. `.claude/settings.local.json` -- project-level (personal)
 4. Plugin `hooks/hooks.json`
@@ -118,6 +123,9 @@ or
 | `$TRANSCRIPT_PATH` | Prompt hooks |
 | `$TOOL_INPUT` | Prompt hooks (PreToolUse) |
 
+Inside a PowerShell command hook, read these as `$env:CLAUDE_PROJECT_DIR` and
+`$env:CLAUDE_PLUGIN_ROOT`. The `$NAME` form above is how Claude Code names them.
+
 ## Hooks in Skill/Agent Frontmatter
 
 ```yaml
@@ -132,7 +140,7 @@ hooks:
     - matcher: "*"
       hooks:
         - type: command
-          command: "bash scripts/check-quality.sh"
+          command: "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-quality.ps1"
 ```
 
 Special flags:
@@ -150,7 +158,7 @@ hooks:
     - matcher: "*"
       hooks:
         - type: command
-          command: "bash scripts/run-tests.sh"
+          command: "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run-tests.ps1"
 ```
 
 ### Validate Tool Input (pre-approve with modification)
@@ -170,5 +178,5 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "bash scripts/lint.sh"
+          command: "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/lint.ps1"
 ```

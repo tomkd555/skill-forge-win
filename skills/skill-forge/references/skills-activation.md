@@ -6,11 +6,11 @@ writing descriptions that trigger correctly.
 ## Skill Locations (Priority Order)
 
 1. **Enterprise** (highest priority)
-2. **Personal**: `~/.claude/skills/*/SKILL.md`
-3. **Project**: `.claude/skills/*/SKILL.md`
+2. **Personal**: `%USERPROFILE%\.claude\skills\*\SKILL.md`
+3. **Project**: `.claude\skills\*\SKILL.md`
 4. **Additional directories**: via `--add-dir` (auto-loaded)
-5. **Plugin**: `skills/*/SKILL.md` within installed plugins
-6. **Nested**: Auto-discovered from `.claude/skills` in subdirectories (monorepo)
+5. **Plugin**: `skills\*\SKILL.md` within installed plugins
+6. **Nested**: Auto-discovered from `.claude\skills` in subdirectories (monorepo)
 
 ## How Activation Works
 
@@ -80,7 +80,8 @@ metadata:
 
 ## Dynamic Context Injection
 
-Execute bash at skill load time with `!` backtick syntax:
+Execute a shell command at skill load time with `!` backtick syntax. On Windows
+the command runs through the session shell, so write it as PowerShell:
 
 ```markdown
 Current branch: !`git branch --show-current`
@@ -102,9 +103,9 @@ polluting the main conversation. Useful for exploration-heavy skills.
 
 ### Permission Levels (Priority Order)
 1. Managed policy (organization-enforced, highest)
-2. User settings: `~/.claude/settings.json`
-3. Project settings: `.claude/settings.json`
-4. Local settings: `.claude/settings.local.json`
+2. User settings: `%USERPROFILE%\.claude\settings.json`
+3. Project settings: `.claude\settings.json`
+4. Local settings: `.claude\settings.local.json`
 5. Skill frontmatter: `allowed-tools`
 
 ### Permission Decisions
@@ -122,7 +123,7 @@ polluting the main conversation. Useful for exploration-heavy skills.
 
 ## Skill Hot-Reload
 
-Skills created or modified in `~/.claude/skills` or `.claude/skills` are
+Skills created or modified in `%USERPROFILE%\.claude\skills` or `.claude\skills` are
 immediately available without restarting the session.
 
 ## Hidden Features for Skill Creators
@@ -143,7 +144,7 @@ skill descriptions visible without truncation.
 `/plan` command enters plan mode. Shift+Tab selects "auto-accept edits".
 
 ### Subagent Transcripts
-Stored at `~/.claude/projects/{project}/{sessionId}/subagents/`.
+Stored at `%USERPROFILE%\.claude\projects\{project}\{sessionId}\subagents\`.
 Useful for debugging or chaining workflows.
 
 ### File References

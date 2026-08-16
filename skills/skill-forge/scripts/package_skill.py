@@ -3,14 +3,17 @@
 Purpose: Package a Claude Code skill into a distributable .skill (ZIP) file.
 Input: Path to skill directory (or parent with skills/ and agents/)
 Output: .skill ZIP file ready for distribution
-Usage: python scripts/package_skill.py /path/to/skill-root --output ./dist
+Usage: python scripts/package_skill.py C:\\path\\to\\skill-root --output .\\dist
 
 The script packages:
-- Main skill directory (skill-name/)
+- Main skill directory (skills/skill-name/, or skill-name/ in a flat layout)
 - Sub-skill directories (skills/skill-name-*/)
 - Agent definitions (agents/skill-name-*.md)
+- Plugin manifests (.claude-plugin/*.json)
 - Scripts directory (scripts/)
-- install.sh (if present)
+- install.ps1 (if present)
+
+Archive entry names always use forward slashes, as the ZIP format requires.
 """
 
 import argparse
@@ -31,8 +34,8 @@ EXCLUDED_PATTERNS = {
     '.tmp',
     '.env',
     'node_modules',
-    '.DS_Store',
     'Thumbs.db',
+    'desktop.ini',
 }
 
 
@@ -51,7 +54,7 @@ def find_skill_name(skill_path: Path) -> str | None:
     if not skill_md.exists():
         return None
 
-    content = skill_md.read_text()
+    content = skill_md.read_text(encoding="utf-8")
     for line in content.split('\n'):
         line = line.strip()
         if line.startswith('name:'):
@@ -59,7 +62,24 @@ def find_skill_name(skill_path: Path) -> str | None:
     return None
 
 
-def collect_files(root: Path, skill_name: str) -> list[tuple[Path, str]]:
+def find_main_skill(root: Path) -> tuple[str, Path] | tuple[None, None]:
+    """Locate the main skill directory and its declared name.
+
+    Looks under skills\\ first, which is where a marketplace-installable plugin
+    keeps every skill, then falls back to the root for a flat layout.
+    """
+    for base in [root / "skills", root]:
+        if not base.is_dir():
+            continue
+        for item in sorted(base.iterdir()):
+            if item.is_dir() and (item / "SKILL.md").exists():
+                name = find_skill_name(item)
+                if name:
+                    return name, item
+    return None, None
+
+
+def collect_files(root: Path, skill_name: str, main_dir: Path) -> list[tuple[Path, str]]:
     """Collect all files to include in the package.
 
     Returns list of (absolute_path, archive_path) tuples.
@@ -67,29 +87,35 @@ def collect_files(root: Path, skill_name: str) -> list[tuple[Path, str]]:
     files: list[tuple[Path, str]] = []
 
     # Main skill directory
-    main_dir = root / skill_name
     if main_dir.is_dir():
         for f in main_dir.rglob('*'):
             if f.is_file() and not should_exclude(f):
-                archive_path = str(f.relative_to(root))
+                archive_path = f.relative_to(root).as_posix()
                 files.append((f, archive_path))
 
     # Sub-skills directory
     skills_dir = root / "skills"
     if skills_dir.is_dir():
         for sub_dir in skills_dir.iterdir():
-            if sub_dir.is_dir() and sub_dir.name.startswith(f"{skill_name}-"):
+            if (sub_dir.is_dir() and sub_dir != main_dir
+                    and sub_dir.name.startswith(f"{skill_name}-")):
                 for f in sub_dir.rglob('*'):
                     if f.is_file() and not should_exclude(f):
-                        archive_path = str(f.relative_to(root))
+                        archive_path = f.relative_to(root).as_posix()
                         files.append((f, archive_path))
+
+    # Plugin manifests
+    plugin_dir = root / ".claude-plugin"
+    if plugin_dir.is_dir():
+        for f in sorted(plugin_dir.glob("*.json")):
+            files.append((f, f.relative_to(root).as_posix()))
 
     # Agents directory
     agents_dir = root / "agents"
     if agents_dir.is_dir():
         for f in agents_dir.glob(f"{skill_name}-*.md"):
             if f.is_file():
-                archive_path = str(f.relative_to(root))
+                archive_path = f.relative_to(root).as_posix()
                 files.append((f, archive_path))
 
     # Scripts directory
@@ -97,13 +123,13 @@ def collect_files(root: Path, skill_name: str) -> list[tuple[Path, str]]:
     if scripts_dir.is_dir():
         for f in scripts_dir.rglob('*'):
             if f.is_file() and not should_exclude(f):
-                archive_path = str(f.relative_to(root))
+                archive_path = f.relative_to(root).as_posix()
                 files.append((f, archive_path))
 
     # Install script
-    install_sh = root / "install.sh"
-    if install_sh.exists():
-        files.append((install_sh, "install.sh"))
+    install_ps1 = root / "install.ps1"
+    if install_ps1.exists():
+        files.append((install_ps1, "install.ps1"))
 
     # LICENSE
     for license_name in ["LICENSE", "LICENSE.txt", "LICENSE.md"]:
@@ -121,18 +147,13 @@ def package_skill(root_path: str, output_dir: str) -> dict[str, Any]:
     out = Path(output_dir).resolve()
 
     # Find the main skill directory
-    skill_name = None
-    for item in root.iterdir():
-        if item.is_dir() and (item / "SKILL.md").exists():
-            skill_name = find_skill_name(item)
-            if skill_name:
-                break
+    skill_name, main_dir = find_main_skill(root)
 
-    if not skill_name:
+    if not skill_name or main_dir is None:
         return {"error": "No valid skill found (no SKILL.md with name field)"}
 
     # Collect files
-    files = collect_files(root, skill_name)
+    files = collect_files(root, skill_name, main_dir)
     if not files:
         return {"error": "No files found to package"}
 

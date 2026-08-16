@@ -51,7 +51,7 @@ Accept eval definitions from:
 
 If no eval set exists, generate one:
 1. Read the skill's SKILL.md description and instructions
-2. Run `python scripts/generate_eval_set.py <skill-path>` to produce a starter set
+2. Run `python scripts\generate_eval_set.py <skill-path>` to produce a starter set
 3. Present the generated set to the user for review and editing
 4. User approves or modifies before proceeding
 
@@ -148,7 +148,7 @@ Delegate to `agents/skill-forge-grader.md` for each completed run:
 
 ### Step 5: Aggregate and Analyze
 
-1. Run `python scripts/aggregate_benchmark.py <workspace>/iteration-<N> --skill-name <name>`
+1. Run `python scripts\aggregate_benchmark.py <workspace>/iteration-<N> --skill-name <name>`
 2. This produces `benchmark.json` and `benchmark.md` with:
    - Pass rate per eval (with_skill vs baseline)
    - Average time and token usage

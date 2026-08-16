@@ -58,15 +58,16 @@ Walk the user through the full skill creation lifecycle:
 
 ### Command Routing
 
-For specific commands, load the relevant sub-skill:
-- `/skill-forge plan` -> `skills/skill-forge-plan/SKILL.md`
-- `/skill-forge build` -> `skills/skill-forge-build/SKILL.md`
-- `/skill-forge review` -> `skills/skill-forge-review/SKILL.md`
-- `/skill-forge evolve` -> `skills/skill-forge-evolve/SKILL.md`
-- `/skill-forge eval` -> `skills/skill-forge-eval/SKILL.md`
-- `/skill-forge benchmark` -> `skills/skill-forge-benchmark/SKILL.md`
-- `/skill-forge publish` -> `skills/skill-forge-publish/SKILL.md`
-- `/skill-forge convert` -> `skills/skill-forge-convert/SKILL.md`
+For specific commands, load the relevant sub-skill. The sub-skills sit beside this
+one, so the paths are relative to this skill's own folder:
+- `/skill-forge plan` -> `..\skill-forge-plan\SKILL.md`
+- `/skill-forge build` -> `..\skill-forge-build\SKILL.md`
+- `/skill-forge review` -> `..\skill-forge-review\SKILL.md`
+- `/skill-forge evolve` -> `..\skill-forge-evolve\SKILL.md`
+- `/skill-forge eval` -> `..\skill-forge-eval\SKILL.md`
+- `/skill-forge benchmark` -> `..\skill-forge-benchmark\SKILL.md`
+- `/skill-forge publish` -> `..\skill-forge-publish\SKILL.md`
+- `/skill-forge convert` -> `..\skill-forge-convert\SKILL.md`
 
 ## Skill Complexity Tiers
 
@@ -76,24 +77,24 @@ Detect the appropriate tier based on user's description:
 - Simple workflow or document generation
 - No sub-skills or subagents needed
 - Under 200 lines of instructions
-- **Template**: `assets/templates/minimal.md`
+- **Template**: `assets\templates\minimal.md`
 
 ### Tier 2: Skill + Scripts (SKILL.md + scripts/)
 - Needs deterministic execution (validation, data processing)
 - Python/Bash scripts for fragile operations
-- **Template**: `assets/templates/workflow.md`
+- **Template**: `assets\templates\workflow.md`
 
 ### Tier 3: Multi-Skill Orchestrator (main + sub-skills)
 - Complex domain with multiple distinct workflows
 - Main skill routes to specialized sub-skills
 - Shared references across sub-skills
-- **Template**: `assets/templates/multi-skill.md`
+- **Template**: `assets\templates\multi-skill.md`
 
 ### Tier 4: Full Ecosystem (orchestrator + sub-skills + agents + scripts)
 - Enterprise-grade skill with parallel subagent delegation
 - Multiple execution scripts for deterministic tasks
 - Industry templates and reference knowledge
-- **Template**: `assets/templates/ecosystem.md`
+- **Template**: `assets\templates\ecosystem.md`
 
 ## Core Principles (Enforce in ALL generated skills)
 
@@ -108,7 +109,7 @@ The `description` field determines when the skill activates. It MUST contain:
 - WHEN to use it (trigger phrases users would say)
 - Key domain keywords for matching
 
-Read `references/description-guide.md` for the complete framework.
+Read `references\description-guide.md` for the complete framework.
 
 ### 3. The 3-Layer Architecture
 - **Layer 1 (Directive)**: SKILL.md instructions, reference files = the "what"
@@ -145,21 +146,21 @@ Before marking any generated skill as complete:
 - [ ] Reference files linked (not inlined) for detailed knowledge
 - [ ] Scripts have docstrings, type hints, error handling
 
-Run `python scripts/validate_skill.py <path>` to verify programmatically.
+Run `python scripts\validate_skill.py <path>` to verify programmatically.
 
 ## Reference Files
 
 Load on-demand as needed -- do NOT load all at startup:
-- `references/anatomy.md` -- Skill file structure, naming rules, agent format
-- `references/patterns.md` -- Proven workflow patterns with examples
-- `references/frontmatter-spec.md` -- YAML frontmatter specification (skills)
-- `references/description-guide.md` -- Writing trigger-optimized descriptions
-- `references/testing-guide.md` -- Testing methodology and checklist
-- `references/pro-agent.md` -- 3-layer architecture deep dive
-- `references/tools-reference.md` -- All tool names, permission patterns, MCP
-- `references/hooks-reference.md` -- Hook events, types, quality gate patterns
-- `references/skills-activation.md` -- Skill discovery, activation, advanced features
-- `references/platforms.md` -- Platform specs and conversion rules
+- `references\anatomy.md` -- Skill file structure, naming rules, agent format
+- `references\patterns.md` -- Proven workflow patterns with examples
+- `references\frontmatter-spec.md` -- YAML frontmatter specification (skills)
+- `references\description-guide.md` -- Writing trigger-optimized descriptions
+- `references\testing-guide.md` -- Testing methodology and checklist
+- `references\pro-agent.md` -- 3-layer architecture deep dive
+- `references\tools-reference.md` -- All tool names, permission patterns, MCP
+- `references\hooks-reference.md` -- Hook events, types, quality gate patterns
+- `references\skills-activation.md` -- Skill discovery, activation, advanced features
+- `references\platforms.md` -- Platform specs and conversion rules
 
 ## Sub-Skills
 

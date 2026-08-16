@@ -111,12 +111,12 @@ hooks:
     - matcher: "*"
       hooks:
         - type: command
-          command: "bash scripts/check-quality.sh"
+          command: "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-quality.ps1"
   PostToolUse:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "bash scripts/lint.sh"
+          command: "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/lint.ps1"
 ```
 
 **Real example**: Anthropic's brand-guidelines (style enforcement),

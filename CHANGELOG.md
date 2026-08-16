@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.2.0 — Windows Edition & Plugin Marketplace
+
+Fork of [AgriciDaniel/skill-forge](https://github.com/AgriciDaniel/skill-forge),
+rebuilt for Windows and for installation through the Claude Code plugin marketplace.
+
+### Marketplace
+
+- `.claude-plugin/marketplace.json` publishes the repository as a one-plugin catalogue with `source: "./"`
+- `.claude-plugin/plugin.json` carries the full manifest (displayName, author, repository, keywords)
+- Main skill moved from `skill-forge/` to `skills/skill-forge/`, so all 9 skills and 8 agents land in the directories Claude Code scans automatically
+
+### Windows
+
+- `install.ps1` replaces `install.sh` and `uninstall.sh`, with `-Uninstall` folding both jobs into one script
+- Every `read_text()` / `write_text()` call passes `encoding="utf-8"`, so scripts no longer fail on a cp932 locale
+- `package_skill.py` writes ZIP entry names with forward slashes, which the ZIP format requires
+- `convert_skill.py` generates `install-multiplatform.ps1` instead of a Bash installer, and no longer calls `os.chmod`
+- Hook examples, storage paths, and command samples across the skills and references use PowerShell and `%USERPROFILE%`
+
 ## v1.1.0 — Eval Pipeline & Benchmarking
 
 ### Features

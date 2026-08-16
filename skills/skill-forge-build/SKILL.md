@@ -40,7 +40,7 @@ The most critical step. The description field determines activation.
 - Mention file types if relevant
 - Add negative triggers if risk of over-triggering
 
-**Use `references/description-guide.md` for the full framework.**
+**Use `references\description-guide.md` for the full framework.**
 
 ### Step 3: Write Main SKILL.md
 
@@ -112,7 +112,7 @@ For each script:
 Purpose: [What this script does]
 Input: [Expected input format]
 Output: [Expected output format]
-Usage: python scripts/script_name.py [args]
+Usage: python scripts\script_name.py [args]
 """
 
 import argparse
@@ -193,13 +193,18 @@ Return structured markdown with findings and recommendations.
 `<example>` blocks, agent-only fields include `tools`, `color`, `permissionMode`,
 `maxTurns`, `memory`. Body becomes the system prompt (second person).
 
-### Step 8: Generate Install Script
+### Step 8: Generate Distribution Files
 
-Create `install.sh` that copies files to `~/.claude/skills/` and `~/.claude/agents/`.
+Create `.claude-plugin\plugin.json` and `.claude-plugin\marketplace.json` so the
+skill installs as a plugin, plus `install.ps1` as the manual fallback that copies
+`skills\*` to `%USERPROFILE%\.claude\skills\` and `agents\*.md` to
+`%USERPROFILE%\.claude\agents\`.
+
+Load `skills\skill-forge-publish\SKILL.md` for the manifest and script templates.
 
 ### Step 9: Validate
 
-Run `python scripts/validate_skill.py <path>` on the generated skill.
+Run `python scripts\validate_skill.py <path>` on the generated skill.
 Check all quality gates from the main SKILL.md.
 
 ### Step 10: Output Summary
@@ -214,8 +219,8 @@ Present the user with:
 ## Scaffolding Command
 
 For quick scaffolding, use:
-```bash
-python scripts/init_skill.py <skill-name> --tier <1-4> --path <output-path>
+```powershell
+python scripts\init_skill.py <skill-name> --tier <1-4> --path <output-path>
 ```
 
 This creates the full directory structure with placeholder content.

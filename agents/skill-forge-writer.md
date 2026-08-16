@@ -59,6 +59,6 @@ file path. Include both the YAML frontmatter and full body content.
 
 ## Cross-References
 
-- Load `references/description-guide.md` for description framework
-- Load `references/frontmatter-spec.md` for YAML specification
+- Load `references\description-guide.md` for description framework
+- Load `references\frontmatter-spec.md` for YAML specification
 - Load relevant template from `assets/templates/` based on tier

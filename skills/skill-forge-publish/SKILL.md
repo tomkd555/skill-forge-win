@@ -19,49 +19,108 @@ Run the full review before publishing:
 3. Test with at least 5 trigger queries
 4. Verify all cross-references resolve
 
-### Step 2: Create Install Script
+### Step 2: Create the Plugin Manifests
 
-Generate `install.sh` that handles:
+The marketplace is the primary distribution route on Windows. It needs two files
+at the repository root, and a layout where every skill sits under `skills\`.
 
-```bash
-#!/usr/bin/env bash
-# Install script for [skill-name]
-# Usage: bash install.sh
+`.claude-plugin\plugin.json` describes the plugin itself:
 
-set -euo pipefail
-
-SKILL_DIR="$HOME/.claude/skills"
-AGENT_DIR="$HOME/.claude/agents"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-echo "Installing [skill-name] skill..."
-
-# Create directories
-mkdir -p "$SKILL_DIR" "$AGENT_DIR"
-
-# Copy main skill
-cp -r "$SCRIPT_DIR/skill-name" "$SKILL_DIR/"
-echo "  Installed: skill-name"
-
-# Copy sub-skills
-for skill in "$SCRIPT_DIR/skills"/skill-name-*/; do
-    if [ -d "$skill" ]; then
-        skill_basename=$(basename "$skill")
-        cp -r "$skill" "$SKILL_DIR/"
-        echo "  Installed: $skill_basename"
-    fi
-done
-
-# Copy agents (if any)
-if [ -d "$SCRIPT_DIR/agents" ]; then
-    cp "$SCRIPT_DIR/agents"/*.md "$AGENT_DIR/" 2>/dev/null || true
-    echo "  Installed agents"
-fi
-
-echo ""
-echo "Installation complete!"
-echo "Test with: /skill-name"
+```json
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "skill-name",
+  "displayName": "Skill Name",
+  "version": "1.0.0",
+  "description": "[what it does, when it triggers]",
+  "author": { "name": "[you]", "url": "https://github.com/[user]" },
+  "homepage": "https://github.com/[user]/[repo]",
+  "repository": "https://github.com/[user]/[repo]",
+  "license": "MIT",
+  "keywords": ["[domain]", "[capability]"]
+}
 ```
+
+`.claude-plugin\marketplace.json` publishes it as a one-plugin catalogue:
+
+```json
+{
+  "name": "[marketplace-name]",
+  "owner": { "name": "[you]", "url": "https://github.com/[user]" },
+  "description": "[what this catalogue offers]",
+  "plugins": [
+    {
+      "name": "skill-name",
+      "source": "./",
+      "description": "[same description as plugin.json]",
+      "category": "development",
+      "tags": ["[domain]", "[capability]"]
+    }
+  ]
+}
+```
+
+`source: "./"` means the repository root is the plugin. Claude Code then scans
+`skills\` and `agents\` automatically, so declare no `skills` field unless one
+shared `skills\` folder serves more than one plugin.
+
+Validate both manifests before pushing:
+
+```powershell
+claude plugin validate .
+```
+
+### Step 2b: Create the PowerShell Install Script
+
+Ship `install.ps1` as the manual fallback for users who don't want a plugin:
+
+```powershell
+#!/usr/bin/env pwsh
+<#
+.SYNOPSIS
+    Install [skill-name] into %USERPROFILE%\.claude\.
+.PARAMETER Uninstall
+    Remove everything this script installs.
+#>
+param([switch]$Uninstall)
+
+$ErrorActionPreference = "Stop"
+
+$ScriptDir = $PSScriptRoot
+$SkillDir = Join-Path $env:USERPROFILE ".claude\skills"
+$AgentDir = Join-Path $env:USERPROFILE ".claude\agents"
+
+if ($Uninstall) {
+    Get-ChildItem -Path $SkillDir -Directory -Filter "skill-name*" -ErrorAction SilentlyContinue |
+        Remove-Item -Recurse -Force
+    Get-ChildItem -Path $AgentDir -File -Filter "skill-name-*.md" -ErrorAction SilentlyContinue |
+        Remove-Item -Force
+    Write-Host "Uninstalled. Restart Claude Code to complete removal."
+    return
+}
+
+New-Item -ItemType Directory -Force -Path $SkillDir | Out-Null
+New-Item -ItemType Directory -Force -Path $AgentDir | Out-Null
+
+foreach ($skill in Get-ChildItem -Path (Join-Path $ScriptDir "skills") -Directory) {
+    $target = Join-Path $SkillDir $skill.Name
+    if (Test-Path $target) { Remove-Item -Recurse -Force $target }
+    Copy-Item -Path $skill.FullName -Destination $target -Recurse -Force
+    Write-Host "  Installed skill: $($skill.Name)"
+}
+
+$agentSource = Join-Path $ScriptDir "agents"
+if (Test-Path $agentSource) {
+    Copy-Item -Path (Join-Path $agentSource "*.md") -Destination $AgentDir -Force
+    Write-Host "  Installed agents"
+}
+
+Write-Host ""
+Write-Host "Installation complete. Test with: /skill-name"
+```
+
+Delete the target directory before copying. `Copy-Item -Recurse` nests a second
+copy inside an existing directory of the same name instead of replacing it.
 
 ### Step 3: Create README.md (repo-level, NOT inside skill folder)
 
@@ -76,11 +135,17 @@ echo "Test with: /skill-name"
 
 ## Installation
 
-### Claude Code
+### Claude Code plugin (recommended)
 ```
+/plugin marketplace add [user]/[repo]
+/plugin install skill-name@[marketplace-name]
+```
+
+### Manual (PowerShell)
+```powershell
 git clone https://github.com/[user]/[repo]
 cd [repo]
-bash install.sh
+powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
 ### Claude.ai
@@ -118,14 +183,15 @@ User: "[example input]"
 ### Step 4: Package for Distribution
 
 **For Claude.ai upload:**
-Run `python scripts/package_skill.py <path> <output-dir>` to create a `.skill` zip file.
+Run `python scripts\package_skill.py <path> <output-dir>` to create a `.skill` zip file.
 
 **For GitHub:**
 1. Create repository with README.md at root
-2. Skill folder(s) at root level
-3. install.sh at root level
-4. Add LICENSE file
-5. Add .gitignore (exclude .tmp/, __pycache__/, *.pyc)
+2. Every skill folder under `skills\`, every agent under `agents\`
+3. `.claude-plugin\plugin.json` and `.claude-plugin\marketplace.json` at root
+4. `install.ps1` at root as the manual fallback
+5. Add LICENSE file
+6. Add .gitignore (exclude .tmp/, __pycache__/, *.pyc)
 
 **For team deployment (Claude.ai admin):**
 - Skills can be deployed workspace-wide by admins
@@ -148,7 +214,8 @@ build/
 ### Step 6: Release Checklist
 
 - [ ] All files validated (score >= 80)
-- [ ] install.sh tested on clean system
+- [ ] `claude plugin validate .` passes
+- [ ] install.ps1 tested on a clean Windows profile
 - [ ] README.md covers installation, usage, and examples
 - [ ] LICENSE file included
 - [ ] .gitignore configured
@@ -169,7 +236,7 @@ After publishing:
 
 | Channel | Best For | Format |
 |---------|----------|--------|
-| GitHub | Open source, community | Repository + install.sh |
+| Claude Code plugin marketplace | Wide distribution, automatic updates | `.claude-plugin\marketplace.json` in a GitHub repo |
+| GitHub clone | Users who want the source | Repository + install.ps1 |
 | Claude.ai upload | Personal use | .skill zip |
 | Team admin | Organization-wide | .skill zip via admin console |
-| Claude Plugin Marketplace | Wide distribution | .claude-plugin/ manifest |

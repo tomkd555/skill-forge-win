@@ -47,5 +47,5 @@ Return a structured markdown document with these sections:
 
 ## Cross-References
 
-- Load `references/anatomy.md` for file structure conventions
-- Load `references/patterns.md` for workflow pattern selection
+- Load `references\anatomy.md` for file structure conventions
+- Load `references\patterns.md` for workflow pattern selection

@@ -3,7 +3,7 @@
 Purpose: Optimize a skill's description for triggering accuracy using eval-driven iteration.
 Input: Path to skill directory, path to trigger eval set JSON
 Output: JSON report with best description, per-iteration scores, and train/test breakdown
-Usage: python scripts/optimize_description.py /path/to/skill --eval-set trigger_evals.json
+Usage: python scripts/optimize_description.py C:\\path\\to\\skill --eval-set trigger_evals.json
 
 The optimization loop:
 1. Splits eval set into 60% train / 40% held-out test
@@ -185,13 +185,13 @@ def run_optimization(
     if not skill_md.exists():
         return {"error": f"SKILL.md not found at {path}"}
 
-    content = skill_md.read_text()
+    content = skill_md.read_text(encoding="utf-8")
     frontmatter, body = parse_frontmatter(content)
 
     if not frontmatter:
         return {"error": "Could not parse SKILL.md frontmatter"}
 
-    eval_data = json.loads(Path(eval_set_path).read_text())
+    eval_data = json.loads(Path(eval_set_path).read_text(encoding="utf-8"))
     all_evals = eval_data.get("evals", [])
 
     if not all_evals:

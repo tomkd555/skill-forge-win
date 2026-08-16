@@ -26,7 +26,7 @@ manual checks, then generate a health score.
 
 1. Receive path to skill directory
 2. Run programmatic validation:
-   `python scripts/validate_skill.py <path>`
+   `python scripts\validate_skill.py <path>`
 3. Perform manual checks:
    - Read SKILL.md and assess instruction quality
    - Check cross-references (do linked files exist?)
@@ -60,5 +60,5 @@ Return a validation report with:
 
 ## Cross-References
 
-- Load `references/testing-guide.md` for validation criteria
-- Load `references/frontmatter-spec.md` for YAML rules
+- Load `references\testing-guide.md` for validation criteria
+- Load `references\frontmatter-spec.md` for YAML rules

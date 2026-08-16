@@ -3,7 +3,7 @@
 Purpose: Validate a Claude Code skill's structure, frontmatter, and quality.
 Input: Path to a skill directory
 Output: JSON validation report with pass/fail status and issues
-Usage: python scripts/validate_skill.py /path/to/skill [--strict]
+Usage: python scripts/validate_skill.py C:\\path\\to\\skill [--strict]
 """
 
 import argparse
@@ -222,7 +222,7 @@ def validate_scripts(skill_path: Path) -> list[str]:
         return issues
 
     for script in scripts_dir.glob("*.py"):
-        content = script.read_text()
+        content = script.read_text(encoding="utf-8")
 
         if '"""' not in content and "'''" not in content:
             issues.append(f"LOW: Script {script.name} missing docstring")
@@ -241,7 +241,7 @@ def validate_agent(agent_path: Path) -> list[str]:
         issues.append(f"CRITICAL: Agent file not found: {agent_path}")
         return issues
 
-    content = agent_path.read_text()
+    content = agent_path.read_text(encoding="utf-8")
 
     # Check for YAML frontmatter
     if not content.startswith('---'):
@@ -323,7 +323,7 @@ def validate_skill(skill_path: str, strict: bool = False) -> dict[str, Any]:
             "issues": all_issues,
         }
 
-    content = skill_md.read_text()
+    content = skill_md.read_text(encoding="utf-8")
 
     # Parse frontmatter
     frontmatter, body, parse_errors = parse_frontmatter(content)

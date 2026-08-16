@@ -185,7 +185,7 @@ Arbitrary string key-value pairs.
 
 ## Validation
 
-Run: `python scripts/validate_skill.py /path/to/skill`
+Run: `python scripts\validate_skill.py /path/to/skill`
 
 Checklist: `---` present, name is kebab-case matching folder, description
 under 1024 chars with no `<` or `>`, optional fields follow constraints.

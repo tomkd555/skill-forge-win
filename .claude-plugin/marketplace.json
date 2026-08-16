@@ -1,0 +1,23 @@
+{
+  "name": "skill-forge-win",
+  "owner": {
+    "name": "tomkd555",
+    "url": "https://github.com/tomkd555"
+  },
+  "description": "Windows-native build of Skill Forge, the Claude Code skill creator.",
+  "plugins": [
+    {
+      "name": "skill-forge-win",
+      "source": "./",
+      "description": "Windows-native Claude Code skill creator. Design, scaffold, build, review, evolve, eval, benchmark, and publish production-grade agent skills. Ships 9 skills, 8 agents, and 8 Python scripts that run unmodified on Windows.",
+      "category": "development",
+      "tags": [
+        "skills",
+        "skill-creator",
+        "scaffolding",
+        "windows",
+        "powershell"
+      ]
+    }
+  ]
+}

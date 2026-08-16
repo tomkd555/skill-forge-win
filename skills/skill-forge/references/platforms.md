@@ -7,11 +7,11 @@ skills to OpenAI Codex, Google Gemini CLI, Google Antigravity, and Cursor.
 
 | Platform | Project-Level | User-Level (Global) |
 |----------|--------------|---------------------|
-| Claude Code | `.claude/skills/{name}/` | `~/.claude/skills/{name}/` |
-| OpenAI Codex | `.agents/skills/{name}/` | `~/.agents/skills/{name}/` |
-| Gemini CLI | `.gemini/skills/{name}/` | `~/.gemini/skills/{name}/` |
-| Antigravity | `.agent/skills/{name}/` | `~/.gemini/antigravity/skills/{name}/` |
-| Cursor | `.cursor/skills/{name}/` | `~/.cursor/skills/{name}/` |
+| Claude Code | `.claude\skills\{name}\` | `%USERPROFILE%\.claude\skills\{name}\` |
+| OpenAI Codex | `.agents\skills\{name}\` | `%USERPROFILE%\.agents\skills\{name}\` |
+| Gemini CLI | `.gemini\skills\{name}\` | `%USERPROFILE%\.gemini\skills\{name}\` |
+| Antigravity | `.agent\skills\{name}\` | `%USERPROFILE%\.gemini\antigravity\skills\{name}\` |
+| Cursor | `.cursor\skills\{name}\` | `%USERPROFILE%\.cursor\skills\{name}\` |
 
 All platforms use the same `SKILL.md` file as the entry point (Agent Skills standard).
 
@@ -267,13 +267,13 @@ The `/slash-command` syntax is Claude-specific but the underlying routing mechan
 ### Gemini CLI
 - No `allowed-tools` equivalent -- all tools available by default
 - Experimental sub-agents available but not production-ready
-- Skills discovered via `.gemini/skills/` path scanning
+- Skills discovered via `.gemini\skills\` path scanning
 - GEMINI.md is the project instruction file
 - Can natively read AGENTS.md via configurable filename setting
 
 ### Antigravity
 - `name` field is optional in frontmatter (defaults to dirname)
-- Workspace skills in `.agent/skills/`, global in `~/.gemini/antigravity/skills/`
+- Workspace skills in `.agent\skills\`, global in `%USERPROFILE%\.gemini\antigravity\skills\`
 - Supports `{{SKILL_PATH}}` and `{{WORKSPACE_PATH}}` template variables
 - Agent Manager provides multi-agent orchestration
 - No `allowed-tools` or skill-scoped hooks

@@ -3,7 +3,7 @@
 Purpose: Generate a starter eval set for a Claude Code skill based on its SKILL.md.
 Input: Path to a skill directory containing SKILL.md
 Output: JSON eval set with should-trigger and should-not-trigger queries
-Usage: python scripts/generate_eval_set.py /path/to/skill [--output evals.json]
+Usage: python scripts/generate_eval_set.py C:\\path\\to\\skill [--output evals.json]
 
 Analyzes the skill's description and instructions to produce:
 - 10 should-trigger queries (various phrasings, edge cases)
@@ -196,7 +196,7 @@ def generate_eval_set(skill_path: str, output_path: str | None = None) -> dict[s
     if not skill_md.exists():
         return {"error": f"SKILL.md not found at {path}"}
 
-    content = skill_md.read_text()
+    content = skill_md.read_text(encoding="utf-8")
     frontmatter, body = parse_frontmatter(content)
 
     if not frontmatter:
@@ -230,7 +230,7 @@ def generate_eval_set(skill_path: str, output_path: str | None = None) -> dict[s
     if output_path:
         out = Path(output_path)
         out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(json.dumps(eval_set, indent=2))
+        out.write_text(json.dumps(eval_set, indent=2), encoding="utf-8")
 
     return eval_set
 

@@ -156,9 +156,9 @@ For quick fixes without full eval pipeline:
 
 For triggering issues (Category A), use the automated optimization loop:
 
-1. Generate trigger eval set: `python scripts/generate_eval_set.py <path>`
+1. Generate trigger eval set: `python scripts\generate_eval_set.py <path>`
 2. Review and refine the eval set with the user
-3. Run optimization: `python scripts/optimize_description.py <path> --eval-set evals.json`
+3. Run optimization: `python scripts\optimize_description.py <path> --eval-set evals.json`
 4. Review the train/test split scores and improvement suggestions
 5. Apply suggested description changes
 6. Re-run optimization to measure improvement
@@ -177,10 +177,10 @@ When a skill outgrows its tier:
 
 **Tier 2 -> Tier 3** (needs sub-skills):
 1. Identify distinct workflows that can be separated
-2. Extract each into its own `skills/{parent}-{child}/SKILL.md`
+2. Extract each into its own `skills\{parent}-{child}\SKILL.md`
 3. Update main SKILL.md with routing table
-4. Move shared knowledge to `references/`
-5. Update install.sh
+4. Move shared knowledge to `references\`
+5. Update install.ps1
 
 **Tier 3 -> Tier 4** (needs agents):
 1. Identify workflows that can run in parallel
@@ -194,7 +194,7 @@ After evolution:
 1. Update `metadata.version` in frontmatter (if present)
 2. Add learning to SKILL.md or reference file
 3. Update any affected cross-references
-4. Re-run validation: `python scripts/validate_skill.py <path>`
+4. Re-run validation: `python scripts\validate_skill.py <path>`
 5. Test full workflow end-to-end
 
 ## Common Evolution Patterns

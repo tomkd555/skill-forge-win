@@ -1,10 +1,14 @@
-# Skill Forge — Ultimate Claude Code Skill Creator
+# Skill Forge for Windows — Claude Code Skill Creator
 
 ![Skill Forge](skill-forge-header.jpeg)
 
-> **Blog:** [Learn how to build Claude Code skills](https://agricidaniel.com/blog/skill-forge-build-claude-code-skills)
+Design, scaffold, build, review, evolve, and publish production-grade Claude Code
+skills following the [Agent Skills open standard](https://agentskills.io).
 
-Design, scaffold, build, review, evolve, and publish production-grade Claude Code skills following the [Agent Skills open standard](https://agentskills.io).
+This is a Windows-native fork of [AgriciDaniel/skill-forge](https://github.com/AgriciDaniel/skill-forge).
+PowerShell replaces the shell scripts, the Python scripts read and write UTF-8
+explicitly so they survive a cp932 locale, and the repository installs as a
+Claude Code plugin.
 
 ## Features
 
@@ -12,26 +16,42 @@ Design, scaffold, build, review, evolve, and publish production-grade Claude Cod
 - **Build** — Scaffold complete skill file trees with SKILL.md, sub-skills, scripts, references, and agents
 - **Review** — Audit any skill with a 0-100 health score across 6 quality categories
 - **Evolve** — Fix triggering issues, improve instructions, refine architecture based on feedback
-- **Publish** — Package as `.skill` files, generate install scripts, prepare for GitHub distribution
+- **Publish** — Package as `.skill` files, generate plugin manifests, prepare for GitHub distribution
 - **Convert** — Port skills to OpenAI Codex, Google Gemini CLI, Google Antigravity, and Cursor
 - **Eval** — Run evaluation pipelines with assertions, grading, and multi-agent execution
 - **Benchmark** — Measure performance with variance analysis, multiple trials, and threshold gating
 
 ## Installation
 
-### Unix / macOS / WSL
+### Plugin marketplace (recommended)
 
-```bash
-git clone https://github.com/AgriciDaniel/skill-forge.git
-cd skill-forge
-bash install.sh
+In Claude Code:
+
 ```
+/plugin marketplace add tomkd555/skill-forge-win
+/plugin install skill-forge-win@skill-forge-win
+```
+
+Update later with `/plugin marketplace update skill-forge-win`.
+
+### Manual (PowerShell)
+
+```powershell
+git clone https://github.com/tomkd555/skill-forge-win.git
+cd skill-forge-win
+powershell -ExecutionPolicy Bypass -File install.ps1
+```
+
+The script copies every skill to `%USERPROFILE%\.claude\skills\` and every agent
+to `%USERPROFILE%\.claude\agents\`. Re-running it replaces the previous copy.
 
 ### Uninstall
 
-```bash
-bash install.sh --uninstall
+```powershell
+powershell -ExecutionPolicy Bypass -File install.ps1 -Uninstall
 ```
+
+Remove a plugin install with `/plugin uninstall skill-forge-win` instead.
 
 ## Usage
 
@@ -66,19 +86,19 @@ Design a complex skill ecosystem:
 Review an existing skill:
 
 ```
-/skill-forge review ~/.claude/skills/my-skill
+/skill-forge review %USERPROFILE%\.claude\skills\my-skill
 ```
 
 Convert a skill for other platforms:
 
 ```
-/skill-forge convert ~/.claude/skills/my-skill
+/skill-forge convert %USERPROFILE%\.claude\skills\my-skill
 ```
 
 Quick scaffold with the CLI script:
 
-```bash
-python skill-forge/scripts/init_skill.py devops-toolkit --tier 3 --sub docker,k8s,monitor
+```powershell
+python skills\skill-forge\scripts\init_skill.py devops-toolkit --tier 3 --sub docker,k8s,monitor
 ```
 
 ## Skill Complexity Tiers
@@ -93,12 +113,15 @@ python skill-forge/scripts/init_skill.py devops-toolkit --tier 3 --sub docker,k8
 ## Architecture
 
 ```
-skill-forge/                       # Main orchestrator (Tier 4)
-  SKILL.md                         # Entry point and routing
-  references/                      # On-demand knowledge (10 files)
-  scripts/                         # Execution scripts (8 files)
-  assets/templates/                # Skill templates (4 tiers)
+.claude-plugin/
+  plugin.json                      # Plugin manifest
+  marketplace.json                 # One-plugin catalogue, source "./"
 skills/
+  skill-forge/                     # Main orchestrator (Tier 4)
+    SKILL.md                       # Entry point and routing
+    references/                    # On-demand knowledge (10 files)
+    scripts/                       # Execution scripts (8 files)
+    assets/templates/              # Skill templates (4 tiers)
   skill-forge-plan/                # Architecture planning
   skill-forge-build/               # Scaffolding and generation
   skill-forge-review/              # Quality auditing
@@ -116,36 +139,30 @@ agents/
   skill-forge-grader.md            # Eval grading agent
   skill-forge-analyzer.md          # Benchmark analysis agent
   skill-forge-comparator.md        # Blind A/B comparison agent
+install.ps1                        # Manual installer
 ```
+
+Claude Code scans `skills\` and `agents\` on its own, which is why the plugin
+manifest declares no component paths.
 
 ## Dependencies
 
+- **Windows 10 or 11** — PowerShell 5.1 or PowerShell 7 both run the installer
 - **Python 3.10+** — Required for scaffolding, validation, packaging, conversion, eval, and benchmarking scripts
-- **Claude Code** — The CLI tool these skills are built for
+- **Claude Code** — The command-line tool these skills are built for
 - No external Python packages required (stdlib only)
 
 ## Built With
 
 - [Agent Skills Standard](https://agentskills.io) — Open standard for AI agent skills
-- [3-Layer Architecture](skill-forge/references/pro-agent.md) — Directive + Orchestration + Execution
-- Inspired by [claude-seo](https://github.com/AgriciDaniel/claude-seo) and [Anthropic Skills](https://github.com/anthropics/skills)
+- [3-Layer Architecture](skills/skill-forge/references/pro-agent.md) — Directive + Orchestration + Execution
+- Forked from [AgriciDaniel/skill-forge](https://github.com/AgriciDaniel/skill-forge) by Agrici Daniel
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/AgriciDaniel/skill-forge/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/AgriciDaniel/skill-forge/discussions)
+- **Issues**: [GitHub Issues](https://github.com/tomkd555/skill-forge-win/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/tomkd555/skill-forge-win/discussions)
 
 ## License
 
-[MIT](LICENSE)
-
----
-
-## Author
-
-Built by [Agrici Daniel](https://agricidaniel.com/about) - AI Workflow Architect.
-
-- [Blog](https://agricidaniel.com/blog) - Deep dives on AI marketing automation
-- [AI Marketing Hub](https://www.skool.com/ai-marketing-hub) - Free community, 2,800+ members
-- [YouTube](https://www.youtube.com/@AgriciDaniel) - Tutorials and demos
-- [All open-source tools](https://github.com/AgriciDaniel)
+[MIT](LICENSE) — copyright held by the original author, Daniel Agrici.

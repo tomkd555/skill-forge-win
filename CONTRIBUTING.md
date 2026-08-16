@@ -4,16 +4,16 @@ Contributions are welcome. Here's how you can help.
 
 ## Bug Reports
 
-Found a bug? Open an issue on [GitHub Issues](https://github.com/AgriciDaniel/skill-forge/issues) with:
+Found a bug? Open an issue on [GitHub Issues](https://github.com/tomkd555/skill-forge-win/issues) with:
 
 1. What you expected to happen
 2. What actually happened
 3. Steps to reproduce
-4. Your environment (OS, Python version, Claude Code version)
+4. Your environment (Windows version, PowerShell version, Python version, Claude Code version)
 
 ## Feature Suggestions
 
-Have an idea? Start a conversation on [GitHub Discussions](https://github.com/AgriciDaniel/skill-forge/discussions) before opening a PR. This helps align on approach and prevents duplicate work.
+Have an idea? Start a conversation on [GitHub Discussions](https://github.com/tomkd555/skill-forge-win/discussions) before opening a PR. This helps align on approach and prevents duplicate work.
 
 ## Pull Requests
 
@@ -21,8 +21,10 @@ Have an idea? Start a conversation on [GitHub Discussions](https://github.com/Ag
 2. Create a feature branch (`git checkout -b feat/my-feature`)
 3. Make your changes
 4. Validate your changes:
-   ```bash
-   python skill-forge/scripts/validate_skill.py skill-forge/
+   ```powershell
+   python skills\skill-forge\scripts\validate_skill.py skills\skill-forge
+   python tests\test_convert_paths.py
+   claude plugin validate .
    ```
 5. Commit with a clear message (`git commit -m "feat: add new feature"`)
 6. Push to your fork (`git push origin feat/my-feature`)

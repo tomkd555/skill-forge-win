@@ -3,7 +3,7 @@
 Purpose: Aggregate eval results into a benchmark report with pass rate, time, and tokens.
 Input: Path to an iteration workspace directory containing eval-*/with_skill/ and eval-*/baseline/
 Output: benchmark.json and benchmark.md with aggregated metrics
-Usage: python scripts/aggregate_benchmark.py /path/to/iteration-N --skill-name my-skill
+Usage: python scripts/aggregate_benchmark.py C:\\path\\to\\iteration-N --skill-name my-skill
 
 Reads grading.json and timing.json from each eval run directory and produces:
 - Per-eval pass rate, avg tokens, avg duration
@@ -25,7 +25,7 @@ from typing import Any
 def load_json(path: Path) -> dict[str, Any] | None:
     """Safely load a JSON file, returning None on failure."""
     try:
-        return json.loads(path.read_text())
+        return json.loads(path.read_text(encoding="utf-8"))
     except (FileNotFoundError, json.JSONDecodeError):
         return None
 
@@ -249,7 +249,7 @@ def aggregate_benchmark(
 
     # Write outputs
     benchmark_json_path = path / "benchmark.json"
-    benchmark_json_path.write_text(json.dumps(benchmark, indent=2))
+    benchmark_json_path.write_text(json.dumps(benchmark, indent=2), encoding="utf-8")
 
     # Generate markdown report
     md_lines = [
@@ -282,7 +282,7 @@ def aggregate_benchmark(
     md_lines.append("")
 
     benchmark_md_path = path / "benchmark.md"
-    benchmark_md_path.write_text("\n".join(md_lines))
+    benchmark_md_path.write_text("\n".join(md_lines), encoding="utf-8")
 
     return {
         "status": "success",

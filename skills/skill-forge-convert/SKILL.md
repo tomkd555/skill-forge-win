@@ -29,8 +29,8 @@ best practices.
 ### Step 2: Analyze Platform Compatibility
 
 Run dry-run analysis first:
-```bash
-python scripts/convert_skill.py <path> --dry-run --target all
+```powershell
+python scripts\convert_skill.py <path> --dry-run --target all
 ```
 
 Review the compatibility report:
@@ -41,13 +41,13 @@ Review the compatibility report:
 ### Step 3: Convert to Target Platforms
 
 Run the conversion:
-```bash
-python scripts/convert_skill.py <path> --target codex,gemini,antigravity,cursor --output dist/
+```powershell
+python scripts\convert_skill.py <path> --target codex,gemini,antigravity,cursor --output dist
 ```
 
 For MCP config conversion:
-```bash
-python scripts/convert_skill.py <path> --target all --output dist/ --include-mcp
+```powershell
+python scripts\convert_skill.py <path> --target all --output dist --include-mcp
 ```
 
 ### Step 4: Handle Claude-Only Features
@@ -67,11 +67,11 @@ Features that need manual adaptation per platform:
 ### Step 5: Validate Converted Skills
 
 Run validation on each generated output:
-```bash
-python scripts/validate_skill.py dist/codex/<skill-name>/
-python scripts/validate_skill.py dist/gemini/<skill-name>/
-python scripts/validate_skill.py dist/antigravity/<skill-name>/
-python scripts/validate_skill.py dist/cursor/<skill-name>/
+```powershell
+python scripts\validate_skill.py dist\codex\<skill-name>
+python scripts\validate_skill.py dist\gemini\<skill-name>
+python scripts\validate_skill.py dist\antigravity\<skill-name>
+python scripts\validate_skill.py dist\cursor\<skill-name>
 ```
 
 Fix any critical or high-priority issues before proceeding.
@@ -103,22 +103,22 @@ Present the user with a summary:
 ### Step 7: Generate Multi-Platform Install Script
 
 When converting for all platforms (`--target all`), the script auto-generates
-`install-multiplatform.sh` that:
+`install-multiplatform.ps1` that:
 - Auto-detects the current agent platform
-- Installs to the correct skill path
-- Supports `--platform` flag for explicit selection
+- Installs to the correct skill path under `%USERPROFILE%`
+- Supports the `-Platform` parameter for explicit selection
 
 ## Platform Quick Reference
 
 | Platform | Skill Path | Instruction File | Config Format |
 |----------|-----------|-----------------|---------------|
-| Claude Code | `.claude/skills/` | `CLAUDE.md` | JSON (`.mcp.json`) |
-| OpenAI Codex | `.agents/skills/` | `AGENTS.md` | TOML (`config.toml`) |
-| Gemini CLI | `.gemini/skills/` | `GEMINI.md` | JSON (`settings.json`) |
-| Antigravity | `.agent/skills/` | `GEMINI.md` | JSON (`mcp_config.json`) |
-| Cursor | `.cursor/skills/` | `.cursor/rules/*.mdc` | JSON (`mcp.json`) |
+| Claude Code | `.claude\skills\` | `CLAUDE.md` | JSON (`.mcp.json`) |
+| OpenAI Codex | `.agents\skills\` | `AGENTS.md` | TOML (`config.toml`) |
+| Gemini CLI | `.gemini\skills\` | `GEMINI.md` | JSON (`settings.json`) |
+| Antigravity | `.agent\skills\` | `GEMINI.md` | JSON (`mcp_config.json`) |
+| Cursor | `.cursor\skills\` | `.cursor\rules\*.mdc` | JSON (`mcp.json`) |
 
-For full platform specs, load `references/platforms.md`.
+For full platform specs, load `references\platforms.md`.
 
 ## Tier Conversion Guidelines
 

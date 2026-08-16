@@ -53,5 +53,5 @@ Return a structured markdown report:
 
 ## Cross-References
 
-- Load `references/platforms.md` for platform specs and conversion rules
-- Use `scripts/convert_skill.py --dry-run` for automated compatibility scoring
+- Load `references\platforms.md` for platform specs and conversion rules
+- Use `scripts\convert_skill.py --dry-run` for automated compatibility scoring

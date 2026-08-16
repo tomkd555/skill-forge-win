@@ -54,7 +54,7 @@ Use `agents/skill-forge-executor.md` for parallel execution where possible.
 
 ### Step 3: Aggregate Results
 
-Run `python scripts/aggregate_benchmark.py <workspace>/iteration-<N> --skill-name <name>`:
+Run `python scripts\aggregate_benchmark.py <workspace>/iteration-<N> --skill-name <name>`:
 
 **Output `benchmark.json` schema:**
 ```json

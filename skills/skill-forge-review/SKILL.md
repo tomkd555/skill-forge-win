@@ -15,14 +15,14 @@ description: >
 
 Accept input as:
 - Path to a skill directory
-- Skill name (search in `~/.claude/skills/`)
+- Skill name (search in `%USERPROFILE%\.claude\skills\`)
 - URL to a GitHub repository
 
 Read all `.md` files, scripts, and asset files.
 
 ### Step 2: Structure Validation
 
-Run `python scripts/validate_skill.py <path>` for programmatic checks.
+Run `python scripts\validate_skill.py <path>` for programmatic checks.
 
 Manual verification:
 - [ ] SKILL.md exists (exact case)
@@ -111,7 +111,7 @@ For skills with sub-skills:
 
 After reviewing, generate a structured trigger eval set for ongoing testing:
 
-1. Run `python scripts/generate_eval_set.py <path>` to auto-generate a starter set
+1. Run `python scripts\generate_eval_set.py <path>` to auto-generate a starter set
 2. Review and refine the generated queries:
    - Ensure 8-10 should-trigger queries cover different phrasings and edge cases
    - Ensure 8-10 should-not-trigger queries are near-misses (not obviously irrelevant)
@@ -121,7 +121,7 @@ After reviewing, generate a structured trigger eval set for ongoing testing:
 **Good queries** are realistic and specific (include file paths, context, domain details).
 **Bad queries** are overly generic ("format this data") or obviously irrelevant.
 
-4. Run `python scripts/optimize_description.py <path> --eval-set evals/evals.json`
+4. Run `python scripts\optimize_description.py <path> --eval-set evals/evals.json`
    to score the current description and get improvement suggestions
 5. Recommend running `/skill-forge eval <path>` for full functional evaluation
 

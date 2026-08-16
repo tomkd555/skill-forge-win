@@ -79,7 +79,7 @@ Solution: TODO
 """
 
     routing_table = "\n".join(
-        f"| `/{name} {s}` | `skills/{name}-{s}/SKILL.md` | TODO |"
+        f"| `/{name} {s}` | `..{chr(92)}{name}-{s}{chr(92)}SKILL.md` | TODO |"
         for s in sub_skills
     ) if sub_skills else "| TODO | TODO | TODO |"
 
@@ -244,12 +244,14 @@ def scaffold(name: str, tier: int, output_path: str,
         sub_skills = []
 
     # Main skill directory
-    main_dir = base / name
+    # Every skill lives under skills\, which is what Claude Code scans when the
+    # result is published as a plugin.
+    main_dir = base / "skills" / name
     main_dir.mkdir(parents=True, exist_ok=True)
 
     # SKILL.md
     skill_md = main_dir / "SKILL.md"
-    skill_md.write_text(create_main_skill(name, tier, sub_skills))
+    skill_md.write_text(create_main_skill(name, tier, sub_skills), encoding="utf-8")
     created_files.append(str(skill_md))
 
     # References (tier 2+)
@@ -257,7 +259,7 @@ def scaffold(name: str, tier: int, output_path: str,
         refs_dir = main_dir / "references"
         refs_dir.mkdir(exist_ok=True)
         ref_file = refs_dir / "domain-knowledge.md"
-        ref_file.write_text(f"# {name.replace('-', ' ').title()} Reference\n\nTODO: Add domain knowledge.\n")
+        ref_file.write_text(f"# {name.replace('-', ' ').title()} Reference\n\nTODO: Add domain knowledge.\n", encoding="utf-8")
         created_files.append(str(ref_file))
 
     # Scripts (tier 2+)
@@ -265,8 +267,7 @@ def scaffold(name: str, tier: int, output_path: str,
         scripts_dir = main_dir / "scripts"
         scripts_dir.mkdir(exist_ok=True)
         script = scripts_dir / "process.py"
-        script.write_text(create_script_template("process"))
-        script.chmod(0o755)
+        script.write_text(create_script_template("process"), encoding="utf-8")
         created_files.append(str(script))
 
     # Sub-skills (tier 3+)
@@ -277,7 +278,7 @@ def scaffold(name: str, tier: int, output_path: str,
             sub_dir = skills_dir / f"{name}-{child}"
             sub_dir.mkdir(exist_ok=True)
             sub_md = sub_dir / "SKILL.md"
-            sub_md.write_text(create_sub_skill(name, child))
+            sub_md.write_text(create_sub_skill(name, child), encoding="utf-8")
             created_files.append(str(sub_md))
 
     # Agents (tier 4)
@@ -286,7 +287,7 @@ def scaffold(name: str, tier: int, output_path: str,
         agents_dir.mkdir(exist_ok=True)
         for child in sub_skills[:3]:  # Create agents for first 3 sub-skills
             agent_file = agents_dir / f"{name}-{child}.md"
-            agent_file.write_text(create_agent(name, child))
+            agent_file.write_text(create_agent(name, child), encoding="utf-8")
             created_files.append(str(agent_file))
 
     # Assets (tier 3+)

@@ -43,16 +43,16 @@ Validate inputs before proceeding:
 
 ### Step 2: {{EXECUTE}}
 Run the processing script:
-```bash
-python scripts/process.py {{INPUT_ARGS}}
+```powershell
+python scripts\process.py {{INPUT_ARGS}}
 ```
 
 Expected output: {{DESCRIBE_OUTPUT_FORMAT}}
 
 ### Step 3: {{VALIDATE_RESULTS}}
 Run validation:
-```bash
-python scripts/validate.py {{OUTPUT_ARGS}}
+```powershell
+python scripts\validate.py {{OUTPUT_ARGS}}
 ```
 
 If validation fails:
@@ -72,7 +72,7 @@ Before delivering output:
 ## Reference Files
 
 Load on-demand as needed:
-- `references/domain-guide.md` -- {{WHAT_IT_CONTAINS}}
+- `references\domain-guide.md` -- {{WHAT_IT_CONTAINS}}
 
 ## Examples
 

@@ -3,7 +3,7 @@
 Purpose: Convert Claude Code skills to work on OpenAI Codex, Gemini CLI, Antigravity, and Cursor.
 Input: Path to a skill directory, target platforms, optional output directory
 Output: JSON conversion report with generated files and compatibility scores
-Usage: python scripts/convert_skill.py /path/to/skill --target codex,gemini,antigravity,cursor [--output dist/] [--dry-run] [--include-mcp]
+Usage: python scripts/convert_skill.py C:\\path\\to\\skill --target codex,gemini,antigravity,cursor [--output dist\\] [--dry-run] [--include-mcp]
 """
 
 import argparse
@@ -47,10 +47,10 @@ CLAUDE_ONLY_FIELDS = {
 
 # Platform skill paths
 PLATFORM_PATHS = {
-    "codex": {"project": ".agents/skills", "user": "~/.agents/skills"},
-    "gemini": {"project": ".gemini/skills", "user": "~/.gemini/skills"},
-    "antigravity": {"project": ".agent/skills", "user": "~/.gemini/antigravity/skills"},
-    "cursor": {"project": ".cursor/skills", "user": "~/.cursor/skills"},
+    "codex": {"project": r".agents\skills", "user": r"%USERPROFILE%\.agents\skills"},
+    "gemini": {"project": r".gemini\skills", "user": r"%USERPROFILE%\.gemini\skills"},
+    "antigravity": {"project": r".agent\skills", "user": r"%USERPROFILE%\.gemini\antigravity\skills"},
+    "cursor": {"project": r".cursor\skills", "user": r"%USERPROFILE%\.cursor\skills"},
 }
 
 # Platform instruction files
@@ -215,37 +215,44 @@ def calculate_compatibility_score(classification: dict[str, list[str]]) -> int:
 
 # --- Body Content Adaptation ---
 
-# Patterns to find and replace in skill body text per platform
+# Path separator class: source skills may be written with either separator, and
+# both convert to the Windows form.
+SEP = r'[\\/]'
+# Home prefix: Windows skills write %USERPROFILE%, ported ones may still write ~.
+HOME = r'(?:~|%USERPROFILE%)'
+
+# Patterns to find and replace in skill body text per platform.
+# Replacement strings double each backslash because re.sub reads them as escapes.
 BODY_REPLACEMENTS: dict[str, list[tuple[str, str]]] = {
     "codex": [
-        (r'~/\.claude/skills/', '~/.agents/skills/'),
-        (r'\.claude/skills/', '.agents/skills/'),
-        (r'~/\.claude/', '~/.agents/'),
-        (r'\.claude/', '.agents/'),
+        (rf'{HOME}{SEP}\.claude{SEP}skills{SEP}', r'%USERPROFILE%\\.agents\\skills\\'),
+        (rf'\.claude{SEP}skills{SEP}', r'.agents\\skills\\'),
+        (rf'{HOME}{SEP}\.claude{SEP}', r'%USERPROFILE%\\.agents\\'),
+        (rf'\.claude{SEP}', r'.agents\\'),
         (r'CLAUDE\.md', 'AGENTS.md'),
     ],
     "gemini": [
-        (r'~/\.claude/skills/', '~/.gemini/skills/'),
-        (r'\.claude/skills/', '.gemini/skills/'),
-        (r'~/\.claude/', '~/.gemini/'),
-        (r'\.claude/', '.gemini/'),
+        (rf'{HOME}{SEP}\.claude{SEP}skills{SEP}', r'%USERPROFILE%\\.gemini\\skills\\'),
+        (rf'\.claude{SEP}skills{SEP}', r'.gemini\\skills\\'),
+        (rf'{HOME}{SEP}\.claude{SEP}', r'%USERPROFILE%\\.gemini\\'),
+        (rf'\.claude{SEP}', r'.gemini\\'),
         (r'CLAUDE\.md', 'GEMINI.md'),
     ],
     "antigravity": [
-        (r'~/\.claude/skills/', '~/.gemini/antigravity/skills/'),
-        (r'\.claude/skills/', '.agent/skills/'),
-        (r'~/\.claude/', '~/.gemini/antigravity/'),
-        (r'\.claude/', '.agent/'),
+        (rf'{HOME}{SEP}\.claude{SEP}skills{SEP}', r'%USERPROFILE%\\.gemini\\antigravity\\skills\\'),
+        (rf'\.claude{SEP}skills{SEP}', r'.agent\\skills\\'),
+        (rf'{HOME}{SEP}\.claude{SEP}', r'%USERPROFILE%\\.gemini\\antigravity\\'),
+        (rf'\.claude{SEP}', r'.agent\\'),
         (r'CLAUDE\.md', 'GEMINI.md'),
-        (r'\./scripts/', '{{SKILL_PATH}}/scripts/'),
-        (r'\./references/', '{{SKILL_PATH}}/references/'),
+        (rf'\.{SEP}scripts{SEP}', r'{{SKILL_PATH}}\\scripts\\'),
+        (rf'\.{SEP}references{SEP}', r'{{SKILL_PATH}}\\references\\'),
     ],
     "cursor": [
-        (r'~/\.claude/skills/', '~/.cursor/skills/'),
-        (r'\.claude/skills/', '.cursor/skills/'),
-        (r'~/\.claude/', '~/.cursor/'),
-        (r'\.claude/', '.cursor/'),
-        (r'CLAUDE\.md', '.cursor/rules/'),
+        (rf'{HOME}{SEP}\.claude{SEP}skills{SEP}', r'%USERPROFILE%\\.cursor\\skills\\'),
+        (rf'\.claude{SEP}skills{SEP}', r'.cursor\\skills\\'),
+        (rf'{HOME}{SEP}\.claude{SEP}', r'%USERPROFILE%\\.cursor\\'),
+        (rf'\.claude{SEP}', r'.cursor\\'),
+        (r'CLAUDE\.md', r'.cursor\\rules\\'),
     ],
 }
 
@@ -439,19 +446,19 @@ def generate_codex_output(
 
     # Generate SKILL.md with cleaned frontmatter and adapted body
     skill_md_content = generate_frontmatter_text(cleaned_fm) + "\n\n" + adapted_body
-    (target_dir / "SKILL.md").write_text(skill_md_content)
+    (target_dir / "SKILL.md").write_text(skill_md_content, encoding="utf-8")
     files_created.append(f"{skill_name}/SKILL.md")
 
     # Generate openai.yaml
     agents_dir = target_dir / "agents"
     agents_dir.mkdir(exist_ok=True)
     openai_yaml = generate_openai_yaml(fm)
-    (agents_dir / "openai.yaml").write_text(openai_yaml)
+    (agents_dir / "openai.yaml").write_text(openai_yaml, encoding="utf-8")
     files_created.append(f"{skill_name}/agents/openai.yaml")
 
     # Generate AGENTS.md with adapted body
     agents_md = generate_instruction_file(fm, adapted_body, "codex")
-    (target_dir / "AGENTS.md").write_text(agents_md)
+    (target_dir / "AGENTS.md").write_text(agents_md, encoding="utf-8")
     files_created.append(f"{skill_name}/AGENTS.md")
 
     # Copy scripts if present
@@ -513,12 +520,12 @@ def generate_gemini_output(
 
     # Generate SKILL.md with cleaned frontmatter and adapted body
     skill_md_content = generate_frontmatter_text(cleaned_fm) + "\n\n" + adapted_body
-    (target_dir / "SKILL.md").write_text(skill_md_content)
+    (target_dir / "SKILL.md").write_text(skill_md_content, encoding="utf-8")
     files_created.append(f"{skill_name}/SKILL.md")
 
     # Generate GEMINI.md with adapted body
     gemini_md = generate_instruction_file(fm, adapted_body, "gemini")
-    (target_dir / "GEMINI.md").write_text(gemini_md)
+    (target_dir / "GEMINI.md").write_text(gemini_md, encoding="utf-8")
     files_created.append(f"{skill_name}/GEMINI.md")
 
     # Copy scripts if present
@@ -579,12 +586,12 @@ def generate_antigravity_output(
 
     # Generate SKILL.md (name is optional on Antigravity but we keep it) with adapted body
     skill_md_content = generate_frontmatter_text(cleaned_fm) + "\n\n" + adapted_body
-    (target_dir / "SKILL.md").write_text(skill_md_content)
+    (target_dir / "SKILL.md").write_text(skill_md_content, encoding="utf-8")
     files_created.append(f"{skill_name}/SKILL.md")
 
     # Generate GEMINI.md with adapted body
     gemini_md = generate_instruction_file(fm, adapted_body, "antigravity")
-    (target_dir / "GEMINI.md").write_text(gemini_md)
+    (target_dir / "GEMINI.md").write_text(gemini_md, encoding="utf-8")
     files_created.append(f"{skill_name}/GEMINI.md")
 
     # Copy scripts if present
@@ -681,14 +688,14 @@ def generate_cursor_output(
 
     # Generate SKILL.md with cleaned frontmatter and adapted body
     skill_md_content = generate_frontmatter_text(cleaned_fm) + "\n\n" + adapted_body
-    (target_dir / "SKILL.md").write_text(skill_md_content)
+    (target_dir / "SKILL.md").write_text(skill_md_content, encoding="utf-8")
     files_created.append(f"{skill_name}/SKILL.md")
 
     # Generate .cursor/rules/<name>.mdc rule file
     rules_dir = target_dir / "rules"
     rules_dir.mkdir(exist_ok=True)
     cursor_rule = generate_cursor_rule(fm, adapted_body)
-    (rules_dir / f"{skill_name}.mdc").write_text(cursor_rule)
+    (rules_dir / f"{skill_name}.mdc").write_text(cursor_rule, encoding="utf-8")
     files_created.append(f"{skill_name}/rules/{skill_name}.mdc")
 
     # Copy scripts if present
@@ -737,7 +744,7 @@ def convert_mcp_json_to_toml(mcp_json_path: Path) -> str | None:
         return None
 
     try:
-        data = json.loads(mcp_json_path.read_text())
+        data = json.loads(mcp_json_path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return None
 
@@ -783,7 +790,7 @@ def convert_mcp_json_for_json_platform(mcp_json_path: Path, platform: str) -> st
         return None
 
     try:
-        data = json.loads(mcp_json_path.read_text())
+        data = json.loads(mcp_json_path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return None
 
@@ -798,106 +805,71 @@ def convert_mcp_json_for_json_platform(mcp_json_path: Path, platform: str) -> st
 # --- Multi-Platform Install Script ---
 
 def generate_multiplatform_install(skill_name: str, platforms: list[str]) -> str:
-    """Generate a multi-platform install.sh that detects the agent platform."""
+    """Generate a multi-platform install.ps1 that detects the agent platform."""
     lines = [
-        '#!/usr/bin/env bash',
+        '#!/usr/bin/env pwsh',
         f'# Multi-platform installer for {skill_name}',
         f'# Supports: Claude Code, {", ".join(p.title() for p in platforms)}',
-        '# Usage: bash install.sh [--platform claude|codex|gemini|antigravity|cursor]',
+        '# Usage: pwsh -File install-multiplatform.ps1 [-Platform claude|codex|gemini|antigravity|cursor]',
         '',
-        'set -euo pipefail',
+        'param([string]$Platform = "auto")',
         '',
-        'SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"',
-        'PLATFORM="${1:-auto}"',
+        '$ErrorActionPreference = "Stop"',
+        '$ScriptDir = $PSScriptRoot',
+        '$UserHome = $env:USERPROFILE',
         '',
-        'detect_platform() {',
-        '    if [ -d "$HOME/.claude" ]; then',
-        '        echo "claude"',
+        'function Get-AgentPlatform {',
+        '    if (Test-Path (Join-Path $UserHome ".claude")) { return "claude" }',
     ]
 
     if "codex" in platforms:
-        lines += [
-            '    elif [ -d "$HOME/.agents" ]; then',
-            '        echo "codex"',
-        ]
+        lines.append('    if (Test-Path (Join-Path $UserHome ".agents")) { return "codex" }')
     if "cursor" in platforms:
-        lines += [
-            '    elif [ -d "$HOME/.cursor" ]; then',
-            '        echo "cursor"',
-        ]
+        lines.append('    if (Test-Path (Join-Path $UserHome ".cursor")) { return "cursor" }')
     if "gemini" in platforms or "antigravity" in platforms:
-        lines += [
-            '    elif [ -d "$HOME/.gemini" ]; then',
-            '        echo "gemini"',
-        ]
+        lines.append('    if (Test-Path (Join-Path $UserHome ".gemini")) { return "gemini" }')
 
     lines += [
-        '    else',
-        '        echo "claude"  # Default',
-        '    fi',
+        '    return "claude"  # Default',
         '}',
         '',
-        'if [ "$PLATFORM" = "auto" ] || [ "$PLATFORM" = "--auto" ]; then',
-        '    PLATFORM=$(detect_platform)',
-        '    echo "Detected platform: $PLATFORM"',
-        'fi',
+        'if ($Platform -eq "auto") {',
+        '    $Platform = Get-AgentPlatform',
+        '    Write-Host "Detected platform: $Platform"',
+        '}',
         '',
-        '# Strip -- prefix if provided as flag',
-        'PLATFORM="${PLATFORM#--}"',
-        'PLATFORM="${PLATFORM#--platform=}"',
-        '',
-        'case "$PLATFORM" in',
-        '    claude)',
-        f'        SKILL_DIR="$HOME/.claude/skills"',
-        '        ;;',
+        'switch ($Platform) {',
+        '    "claude" { $SkillDir = Join-Path $UserHome ".claude\\skills" }',
     ]
 
     if "codex" in platforms:
-        lines += [
-            '    codex)',
-            f'        SKILL_DIR="$HOME/.agents/skills"',
-            '        ;;',
-        ]
+        lines.append('    "codex" { $SkillDir = Join-Path $UserHome ".agents\\skills" }')
     if "gemini" in platforms:
-        lines += [
-            '    gemini)',
-            f'        SKILL_DIR="$HOME/.gemini/skills"',
-            '        ;;',
-        ]
+        lines.append('    "gemini" { $SkillDir = Join-Path $UserHome ".gemini\\skills" }')
     if "antigravity" in platforms:
-        lines += [
-            '    antigravity)',
-            f'        SKILL_DIR="$HOME/.gemini/antigravity/skills"',
-            '        ;;',
-        ]
+        lines.append('    "antigravity" { $SkillDir = Join-Path $UserHome ".gemini\\antigravity\\skills" }')
     if "cursor" in platforms:
-        lines += [
-            '    cursor)',
-            f'        SKILL_DIR="$HOME/.cursor/skills"',
-            '        ;;',
-        ]
+        lines.append('    "cursor" { $SkillDir = Join-Path $UserHome ".cursor\\skills" }')
 
     lines += [
-        '    *)',
-        '        echo "Unknown platform: $PLATFORM"',
-        '        echo "Supported: claude, ' + ", ".join(platforms) + '"',
+        '    default {',
+        '        Write-Error "Unknown platform: $Platform. Supported: claude, ' + ", ".join(platforms) + '"',
         '        exit 1',
-        '        ;;',
-        'esac',
+        '    }',
+        '}',
         '',
-        'echo "Installing to: $SKILL_DIR"',
-        'mkdir -p "$SKILL_DIR"',
+        'Write-Host "Installing to: $SkillDir"',
+        'New-Item -ItemType Directory -Force -Path $SkillDir | Out-Null',
         '',
-        f'# Copy skill for the target platform',
-        'if [ -d "$SCRIPT_DIR/$PLATFORM" ]; then',
-        f'    cp -r "$SCRIPT_DIR/$PLATFORM"/* "$SKILL_DIR/"',
-        'elif [ -d "$SCRIPT_DIR/claude" ]; then',
-        '    # Fallback to claude version',
-        f'    cp -r "$SCRIPT_DIR/claude"/* "$SKILL_DIR/"',
-        'fi',
+        '# Copy skill for the target platform, falling back to the claude version',
+        '$Source = Join-Path $ScriptDir $Platform',
+        'if (-not (Test-Path $Source)) { $Source = Join-Path $ScriptDir "claude" }',
+        'if (Test-Path $Source) {',
+        '    Copy-Item -Path (Join-Path $Source "*") -Destination $SkillDir -Recurse -Force',
+        '}',
         '',
-        'echo ""',
-        f'echo "{skill_name} installed for $PLATFORM!"',
+        'Write-Host ""',
+        f'Write-Host "{skill_name} installed for $Platform!"',
         '',
     ]
 
@@ -922,7 +894,7 @@ def convert_skill(
     if not skill_md.exists():
         return {"status": "error", "message": f"SKILL.md not found in {path}"}
 
-    content = skill_md.read_text()
+    content = skill_md.read_text(encoding="utf-8")
     fm, body, parse_errors = parse_frontmatter(content)
     if not fm:
         return {"status": "error", "message": f"Invalid frontmatter: {'; '.join(parse_errors)}"}
@@ -988,7 +960,7 @@ def convert_skill(
                 if toml_content:
                     codex_dir = out / "codex" / skill_name
                     codex_dir.mkdir(parents=True, exist_ok=True)
-                    (codex_dir / "config.toml").write_text(toml_content)
+                    (codex_dir / "config.toml").write_text(toml_content, encoding="utf-8")
                     if "codex" in platform_results:
                         platform_results["codex"]["files_created"].append(f"{skill_name}/config.toml")
 
@@ -1000,15 +972,14 @@ def convert_skill(
                     if json_content:
                         platform_dir = out / platform / skill_name
                         platform_dir.mkdir(parents=True, exist_ok=True)
-                        (platform_dir / filename).write_text(json_content)
+                        (platform_dir / filename).write_text(json_content, encoding="utf-8")
                         if platform in platform_results:
                             platform_results[platform]["files_created"].append(f"{skill_name}/{filename}")
 
     # Generate multi-platform install script
-    install_script_path = out / "install-multiplatform.sh"
+    install_script_path = out / "install-multiplatform.ps1"
     install_content = generate_multiplatform_install(skill_name, targets)
-    install_script_path.write_text(install_content)
-    os.chmod(install_script_path, 0o755)
+    install_script_path.write_text(install_content, encoding="utf-8")
 
     return {
         "status": "success",
