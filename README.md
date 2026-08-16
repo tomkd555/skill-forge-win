@@ -6,9 +6,7 @@ Design, scaffold, build, review, evolve, and publish production-grade Claude Cod
 skills following the [Agent Skills open standard](https://agentskills.io).
 
 This is a Windows-native fork of [AgriciDaniel/skill-forge](https://github.com/AgriciDaniel/skill-forge).
-PowerShell replaces the shell scripts, the Python scripts read and write UTF-8
-explicitly so they survive a cp932 locale, and the repository installs as a
-Claude Code plugin.
+See [Differences from upstream](#differences-from-upstream) for what changed.
 
 ## Features
 
@@ -101,49 +99,20 @@ Quick scaffold with the CLI script:
 python skills\skill-forge\scripts\init_skill.py devops-toolkit --tier 3 --sub docker,k8s,monitor
 ```
 
-## Skill Complexity Tiers
+## Differences from upstream
 
-| Tier | Name | Structure | Best For |
-|------|------|-----------|----------|
-| 1 | Minimal | Single SKILL.md | Simple workflows, document generation |
-| 2 | Workflow | SKILL.md + scripts | Tasks needing deterministic validation |
-| 3 | Multi-Skill | Orchestrator + sub-skills | Complex domains with multiple workflows |
-| 4 | Ecosystem | Full system with agents | Enterprise-grade parallel analysis |
+| Area | Upstream | This fork |
+|------|----------|-----------|
+| Installer | `install.sh` (bash) | `install.ps1` (PowerShell 5.1 or 7) |
+| Script file I/O | Locale default encoding | Explicit `encoding="utf-8"`, so UTF-8 content survives a cp932 locale |
+| ZIP entry names | `str(path)` | `Path.as_posix()`, since the ZIP format requires forward slashes |
+| Shell examples | bash | PowerShell, with `%USERPROFILE%\.claude\...` paths |
+| Distribution | Manual copy | Plugin marketplace, plus `install.ps1` for a manual copy |
 
-## Architecture
-
-```
-.claude-plugin/
-  plugin.json                      # Plugin manifest
-  marketplace.json                 # One-plugin catalogue, source "./"
-skills/
-  skill-forge/                     # Main orchestrator (Tier 4)
-    SKILL.md                       # Entry point and routing
-    references/                    # On-demand knowledge (10 files)
-    scripts/                       # Execution scripts (8 files)
-    assets/templates/              # Skill templates (4 tiers)
-  skill-forge-plan/                # Architecture planning
-  skill-forge-build/               # Scaffolding and generation
-  skill-forge-review/              # Quality auditing
-  skill-forge-evolve/              # Improvement and iteration
-  skill-forge-eval/                # Evaluation pipeline
-  skill-forge-benchmark/           # Performance benchmarking
-  skill-forge-publish/             # Distribution and packaging
-  skill-forge-convert/             # Multi-platform conversion
-agents/
-  skill-forge-architect.md         # Architecture design agent
-  skill-forge-writer.md            # Content writing agent
-  skill-forge-validator.md         # Validation agent
-  skill-forge-converter.md         # Platform conversion agent
-  skill-forge-executor.md          # Eval execution agent
-  skill-forge-grader.md            # Eval grading agent
-  skill-forge-analyzer.md          # Benchmark analysis agent
-  skill-forge-comparator.md        # Blind A/B comparison agent
-install.ps1                        # Manual installer
-```
-
-Claude Code scans `skills\` and `agents\` on its own, which is why the plugin
-manifest declares no component paths.
+Everything else — the skill tiers, the file layout, the 3-layer architecture, the
+routing between sub-skills — follows upstream. Read the
+[upstream README](https://github.com/AgriciDaniel/skill-forge) for that design,
+and `skills/skill-forge/references/` in this repository for the full reference set.
 
 ## Dependencies
 
@@ -156,7 +125,6 @@ manifest declares no component paths.
 
 - [Agent Skills Standard](https://agentskills.io) — Open standard for AI agent skills
 - [3-Layer Architecture](skills/skill-forge/references/pro-agent.md) — Directive + Orchestration + Execution
-- Forked from [AgriciDaniel/skill-forge](https://github.com/AgriciDaniel/skill-forge) by Agrici Daniel
 
 ## Support
 
@@ -165,4 +133,5 @@ manifest declares no component paths.
 
 ## License
 
-[MIT](LICENSE) — copyright held by the original author, Daniel Agrici.
+[MIT](LICENSE) — copyright held by the original author, Daniel Agrici, and by
+tomkd555 for the changes in this fork.
