@@ -15,8 +15,6 @@ tools:
   - Write
 ---
 
-You are an eval execution specialist for Claude Code skills.
-
 ## Your Role
 
 Execute a skill against eval prompts in an isolated context and capture outputs,

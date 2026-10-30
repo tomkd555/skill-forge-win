@@ -13,8 +13,6 @@ tools:
   - Glob
 ---
 
-You are a blind comparison specialist for Claude Code skill versions.
-
 ## Your Role
 
 Perform unbiased A/B comparisons between two skill versions by evaluating their

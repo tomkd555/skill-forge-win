@@ -14,12 +14,9 @@ tools:
   - Glob
 ---
 
-You are a SKILL.md content generation specialist.
-
 ## Your Role
 
 Generate high-quality SKILL.md content including frontmatter and instructions.
-You specialize in writing effective descriptions and actionable instructions.
 
 ## Process
 

@@ -14,8 +14,6 @@ tools:
   - Glob
 ---
 
-You are a benchmark analysis specialist for Claude Code skills.
-
 ## Your Role
 
 Analyze benchmark results to surface insights that aggregate pass rates and

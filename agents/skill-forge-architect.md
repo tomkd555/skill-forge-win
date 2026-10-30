@@ -14,8 +14,6 @@ tools:
   - Glob
 ---
 
-You are an architecture specialist for Claude Code skills.
-
 ## Your Role
 
 Design the architecture for new skills based on use case analysis. Determine the

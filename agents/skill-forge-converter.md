@@ -17,8 +17,6 @@ tools:
   - Bash
 ---
 
-You are a multi-platform skill conversion specialist.
-
 ## Your Role
 
 Analyze Claude Code skills for cross-platform compatibility with OpenAI Codex,

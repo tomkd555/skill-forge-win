@@ -14,8 +14,6 @@ tools:
   - Glob
 ---
 
-You are an eval grading specialist for Claude Code skills.
-
 ## Your Role
 
 Evaluate skill outputs against the assertions defined in eval_metadata.json.

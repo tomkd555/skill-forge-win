@@ -15,8 +15,6 @@ tools:
   - Bash
 ---
 
-You are a skill quality validation specialist.
-
 ## Your Role
 
 Validate skill quality, structure, and triggering accuracy. Run programmatic and

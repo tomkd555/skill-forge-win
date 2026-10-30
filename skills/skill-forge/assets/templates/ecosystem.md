@@ -154,8 +154,6 @@ tools:
   - Glob
 ---
 
-You are a {{ROLE}} specialist.
-
 ## Your Role
 
 {{WHAT_THIS_AGENT_ANALYZES_IN_THE_PARALLEL_WORKFLOW}}

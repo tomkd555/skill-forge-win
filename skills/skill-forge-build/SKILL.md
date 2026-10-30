@@ -177,8 +177,6 @@ tools:
   - Glob
 ---
 
-You are a [role] specialist.
-
 ## Your Role
 [What this agent does]
 

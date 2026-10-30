@@ -171,8 +171,6 @@ tools:
   - Glob
 ---
 
-You are a {role.replace('-', ' ')} specialist.
-
 ## Your Role
 
 TODO: What this agent does in parallel workflows.
